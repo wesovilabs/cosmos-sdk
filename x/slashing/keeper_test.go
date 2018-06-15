@@ -16,7 +16,7 @@ import (
 func TestHandleDoubleSign(t *testing.T) {
 
 	// initial setup
-	ctx, ck, sk, keeper := createTestInput(t)
+	ctx, ck, sk, _, keeper := createTestInput(t)
 	addr, val, amt := addrs[0], pks[0], sdk.NewInt(100)
 	got := stake.NewHandler(sk)(ctx, newTestMsgCreateValidator(addr, val, amt))
 	require.True(t, got.IsOK())
@@ -39,7 +39,7 @@ func TestHandleDoubleSign(t *testing.T) {
 func TestHandleAbsentValidator(t *testing.T) {
 
 	// initial setup
-	ctx, ck, sk, keeper := createTestInput(t)
+	ctx, ck, sk, _, keeper := createTestInput(t)
 	addr, val, amt := addrs[0], pks[0], sdk.NewInt(100)
 	sh := stake.NewHandler(sk)
 	slh := NewHandler(keeper)
@@ -64,7 +64,7 @@ func TestHandleAbsentValidator(t *testing.T) {
 	info, found = keeper.getValidatorSigningInfo(ctx, val.Address())
 	require.True(t, found)
 	require.Equal(t, int64(0), info.StartHeight)
-	require.Equal(t, SignedBlocksWindow, info.SignedBlocksCounter)
+	require.Equal(t, keeper.SignedBlocksWindow(ctx), info.SignedBlocksCounter)
 
 	// 50 blocks missed
 	for ; height < 1050; height++ {
@@ -74,7 +74,7 @@ func TestHandleAbsentValidator(t *testing.T) {
 	info, found = keeper.getValidatorSigningInfo(ctx, val.Address())
 	require.True(t, found)
 	require.Equal(t, int64(0), info.StartHeight)
-	require.Equal(t, SignedBlocksWindow-50, info.SignedBlocksCounter)
+	require.Equal(t, keeper.SignedBlocksWindow(ctx)-50, info.SignedBlocksCounter)
 
 	// validator should be bonded still
 	validator, _ := sk.GetValidatorByPubKey(ctx, val)
@@ -88,7 +88,7 @@ func TestHandleAbsentValidator(t *testing.T) {
 	info, found = keeper.getValidatorSigningInfo(ctx, val.Address())
 	require.True(t, found)
 	require.Equal(t, int64(0), info.StartHeight)
-	require.Equal(t, SignedBlocksWindow-51, info.SignedBlocksCounter)
+	require.Equal(t, keeper.SignedBlocksWindow(ctx)-51, info.SignedBlocksCounter)
 
 	// validator should have been revoked
 	validator, _ = sk.GetValidatorByPubKey(ctx, val)
@@ -115,7 +115,7 @@ func TestHandleAbsentValidator(t *testing.T) {
 	info, found = keeper.getValidatorSigningInfo(ctx, val.Address())
 	require.True(t, found)
 	require.Equal(t, height, info.StartHeight)
-	require.Equal(t, SignedBlocksWindow-51, info.SignedBlocksCounter)
+	require.Equal(t, keeper.SignedBlocksWindow(ctx)-51, info.SignedBlocksCounter)
 
 	// validator should not be immediately revoked again
 	height++
@@ -139,7 +139,7 @@ func TestHandleAbsentValidator(t *testing.T) {
 // and that they are not immediately revoked
 func TestHandleNewValidator(t *testing.T) {
 	// initial setup
-	ctx, ck, sk, keeper := createTestInput(t)
+	ctx, ck, sk, _, keeper := createTestInput(t)
 	addr, val, amt := addrs[0], pks[0], int64(100)
 	sh := stake.NewHandler(sk)
 	got := sh(ctx, newTestMsgCreateValidator(addr, val, sdk.NewInt(amt)))
