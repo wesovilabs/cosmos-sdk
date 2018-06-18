@@ -22,6 +22,7 @@ FEATURES
   * Delegators delegate votes to validator by default but can override (for their stake)
 * [tools] make get_tools installs tendermint's linter, and gometalinter
 * [tools] Switch gometalinter to the stable version
+* [democoin] add x/oracle, x/assoc
 
 FIXES
 * \#1259 - fix bug where certain tests that could have a nil pointer in defer
