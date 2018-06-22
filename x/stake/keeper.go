@@ -92,7 +92,6 @@ func (k Keeper) getAllValidators(ctx sdk.Context) (validators Validators) {
 	i := 0
 	for ; ; i++ {
 		if !iterator.Valid() {
-			iterator.Close()
 			break
 		}
 		bz := iterator.Value()
@@ -101,6 +100,7 @@ func (k Keeper) getAllValidators(ctx sdk.Context) (validators Validators) {
 		validators = append(validators, validator)
 		iterator.Next()
 	}
+	iterator.Close()
 	return validators
 }
 
@@ -113,7 +113,6 @@ func (k Keeper) GetValidators(ctx sdk.Context, maxRetrieve int16) (validators Va
 	i := 0
 	for ; ; i++ {
 		if !iterator.Valid() || i > int(maxRetrieve-1) {
-			iterator.Close()
 			break
 		}
 		bz := iterator.Value()
@@ -122,6 +121,7 @@ func (k Keeper) GetValidators(ctx sdk.Context, maxRetrieve int16) (validators Va
 		validators[i] = validator
 		iterator.Next()
 	}
+	iterator.Close()
 	return validators[:i] // trim
 }
 
@@ -165,7 +165,6 @@ func (k Keeper) GetValidatorsByPower(ctx sdk.Context) []Validator {
 	i := 0
 	for {
 		if !iterator.Valid() || i > int(maxValidators-1) {
-			iterator.Close()
 			break
 		}
 		address := iterator.Value()
@@ -176,7 +175,6 @@ func (k Keeper) GetValidatorsByPower(ctx sdk.Context) []Validator {
 
 		// Reached to revoked validators, stop iterating
 		if validator.Revoked {
-			iterator.Close()
 			break
 		}
 		if validator.Status() == sdk.Bonded {
@@ -185,6 +183,7 @@ func (k Keeper) GetValidatorsByPower(ctx sdk.Context) []Validator {
 		}
 		iterator.Next()
 	}
+	iterator.Close()
 	return validators[:i] // trim
 }
 
@@ -325,7 +324,6 @@ func (k Keeper) updateBondedValidators(ctx sdk.Context, store sdk.KVStore,
 			if bondedValidatorsCount == int(maxValidators) { // is cliff validator
 				k.setCliffValidator(ctx, validator, k.GetPool(ctx))
 			}
-			iterator.Close()
 			break
 		}
 
@@ -363,6 +361,7 @@ func (k Keeper) updateBondedValidators(ctx sdk.Context, store sdk.KVStore,
 
 		iterator.Next()
 	}
+	iterator.Close()
 
 	// perform the actual kicks
 	if oldCliffValidatorAddr != nil && kickCliffValidator {
@@ -398,7 +397,6 @@ func (k Keeper) updateBondedValidatorsFull(ctx sdk.Context, store sdk.KVStore) {
 			if bondedValidatorsCount == int(maxValidators) { // is cliff validator
 				k.setCliffValidator(ctx, validator, k.GetPool(ctx))
 			}
-			iterator.Close()
 			break
 		}
 
@@ -432,6 +430,7 @@ func (k Keeper) updateBondedValidatorsFull(ctx sdk.Context, store sdk.KVStore) {
 
 		iterator.Next()
 	}
+	iterator.Close()
 
 	// perform the actual kicks
 	for key := range toKickOut {
@@ -546,7 +545,6 @@ func (k Keeper) getAllDelegations(ctx sdk.Context) (delegations []Delegation) {
 	i := 0
 	for ; ; i++ {
 		if !iterator.Valid() {
-			iterator.Close()
 			break
 		}
 		bondBytes := iterator.Value()
@@ -555,6 +553,7 @@ func (k Keeper) getAllDelegations(ctx sdk.Context) (delegations []Delegation) {
 		delegations = append(delegations, delegation)
 		iterator.Next()
 	}
+	iterator.Close()
 	return delegations[:i] // trim
 }
 
@@ -568,7 +567,6 @@ func (k Keeper) GetDelegations(ctx sdk.Context, delegator sdk.Address, maxRetrie
 	i := 0
 	for ; ; i++ {
 		if !iterator.Valid() || i > int(maxRetrieve-1) {
-			iterator.Close()
 			break
 		}
 		bondBytes := iterator.Value()
@@ -577,6 +575,7 @@ func (k Keeper) GetDelegations(ctx sdk.Context, delegator sdk.Address, maxRetrie
 		bonds[i] = bond
 		iterator.Next()
 	}
+	iterator.Close()
 	return bonds[:i] // trim
 }
 

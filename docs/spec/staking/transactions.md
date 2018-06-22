@@ -2,7 +2,7 @@
 ### Transaction Overview
 
 In this section we describe the processing of the transactions and the
-corresponding updates to the state. Transactions: 
+corresponding updates to the state. Transactions:
  - TxCreateValidator
  - TxEditValidator
  - TxDelegation
@@ -20,7 +20,7 @@ Other notes:
  - `getXxx`, `setXxx`, and `removeXxx` functions are used to retrieve and
     modify objects from the store
  - `sdk.Rat` refers to a rational numeric type specified by the SDK.
- 
+
 ### TxCreateValidator
 
 A validator is created using the `TxCreateValidator` transaction.
@@ -34,26 +34,26 @@ type TxCreateValidator struct {
 
     Description         Description
     Commission          sdk.Rat
-    CommissionMax       sdk.Rat 
-    CommissionMaxChange sdk.Rat 
+    CommissionMax       sdk.Rat
+    CommissionMaxChange sdk.Rat
 }
-	
+
 
 createValidator(tx TxCreateValidator):
     validator = getValidator(tx.OwnerAddr)
     if validator != nil return // only one validator per address
-   	
+
     validator = NewValidator(OwnerAddr, ConsensusPubKey, GovernancePubKey, Description)
     init validator poolShares, delegatorShares set to 0
     init validator commision fields from tx
     validator.PoolShares = 0
-   	
+
     setValidator(validator)
-   
-    txDelegate = TxDelegate(tx.OwnerAddr, tx.OwnerAddr, tx.SelfDelegation) 
+
+    txDelegate = TxDelegate(tx.OwnerAddr, tx.OwnerAddr, tx.SelfDelegation)
     delegate(txDelegate, validator) // see delegate function in [TxDelegate](TxDelegate)
     return
-``` 
+```
 
 ### TxEditValidator
 
@@ -67,31 +67,31 @@ type TxEditCandidacy struct {
     Commission          sdk.Rat
     Description         Description
 }
- 
+
 editCandidacy(tx TxEditCandidacy):
     validator = getValidator(tx.ValidatorAddr)
-    
-    if tx.Commission > CommissionMax ||  tx.Commission < 0 then fail 
+
+    if tx.Commission > CommissionMax ||  tx.Commission < 0 then fail
     if rateChange(tx.Commission) > CommissionMaxChange then fail
     validator.Commission = tx.Commission
 
     if tx.GovernancePubKey != nil validator.GovernancePubKey = tx.GovernancePubKey
     if tx.Description != nil validator.Description = tx.Description
-    
+
     setValidator(store, validator)
     return
 ```
-     	
+
 ### TxDelegation
 
 Within this transaction the delegator provides coins, and in return receives
 some amount of their validator's delegator-shares that are assigned to
-`Delegation.Shares`. 
+`Delegation.Shares`.
 
 ```golang
 type TxDelegate struct {
-	DelegatorAddr sdk.Address 
-	ValidatorAddr sdk.Address 
+	DelegatorAddr sdk.Address
+	ValidatorAddr sdk.Address
 	Amount        sdk.Coin  
 }
 
@@ -101,14 +101,14 @@ delegate(tx TxDelegate):
 
     delegation = getDelegatorBond(DelegatorAddr, ValidatorAddr)
     if delegation == nil then delegation = NewDelegation(DelegatorAddr, ValidatorAddr)
-	
+
     validator, pool, issuedDelegatorShares = validator.addTokensFromDel(tx.Amount, pool)
     delegation.Shares += issuedDelegatorShares
-    
+
     setDelegation(delegation)
     updateValidator(validator)
     setPool(pool)
-    return 
+    return
 ```
 
 ### TxStartUnbonding
@@ -117,28 +117,28 @@ Delegator unbonding is defined with the following transaction:
 
 ```golang
 type TxStartUnbonding struct {
-	DelegatorAddr sdk.Address 
-	ValidatorAddr sdk.Address 
+	DelegatorAddr sdk.Address
+	ValidatorAddr sdk.Address
 	Shares        string      
 }
 
 startUnbonding(tx TxStartUnbonding):    
     delegation, found = getDelegatorBond(store, sender, tx.PubKey)
-    if !found == nil return 
-    
+    if !found == nil return
+
 		if bond.Shares < tx.Shares
 			return ErrNotEnoughBondShares
 
 	validator, found = GetValidator(tx.ValidatorAddr)
 	if !found {
-		return err 
+		return err
 
 	bond.Shares -= tx.Shares
 
 	revokeCandidacy = false
 	if bond.Shares.IsZero() {
 
-		if bond.DelegatorAddr == validator.Owner && validator.Revoked == false 
+		if bond.DelegatorAddr == validator.Owner && validator.Revoked == false
 			revokeCandidacy = true
 
 		removeDelegation( bond)
@@ -196,8 +196,8 @@ type TxRedelegate struct {
     DelegatorAddr Address
     ValidatorFrom Validator
     ValidatorTo   Validator
-    Shares        sdk.Rat 
-    CompletedTime int64 
+    Shares        sdk.Rat
+    CompletedTime int64
 }
 
 redelegate(tx TxRedelegate):
@@ -205,15 +205,15 @@ redelegate(tx TxRedelegate):
     pool = getPool()
     delegation = getDelegatorBond(tx.DelegatorAddr, tx.ValidatorFrom.Owner)
     if delegation == nil
-        return 
-    
-    if delegation.Shares < tx.Shares 
-        return 
+        return
+
+    if delegation.Shares < tx.Shares
+        return
     delegation.shares -= Tx.Shares
     validator, pool, createdCoins = validator.RemoveShares(pool, tx.Shares)
     setPool(pool)
-    
-    redelegation = newRedelegation(tx.DelegatorAddr, tx.validatorFrom, 
+
+    redelegation = newRedelegation(tx.DelegatorAddr, tx.validatorFrom,
         tx.validatorTo, tx.Shares, createdCoins, tx.CompletedTime)
     setRedelegation(redelegation)
     return     
@@ -262,7 +262,6 @@ updateBondedValidators(newValidator Validator) (updatedVal Validator)
 
 			if bondedValidatorsCount == int(maxValidators) { // is cliff validator
 				setCliffValidator(ctx, validator, GetPool(ctx))
-			iterator.Close()
 			break
 
 		// either retrieve the original validator from the store,
@@ -287,7 +286,8 @@ updateBondedValidators(newValidator Validator) (updatedVal Validator)
 
 		bondedValidatorsCount++
 		iterator.Next()
-
+    
+  iterator.Close()
 	// perform the actual kicks
 	if oldCliffValidatorAddr != nil && kickCliffValidator {
 		validator = getValidator(store, oldCliffValidatorAddr)
@@ -313,7 +313,7 @@ unbondValidator(ctx Context, store KVStore, validator Validator)
 }
 
 // perform all the store operations for when a validator status becomes bonded
-bondValidator(ctx Context, store KVStore, validator Validator) Validator 
+bondValidator(ctx Context, store KVStore, validator Validator) Validator
 	pool = GetPool(ctx)
 
 	// set the status
