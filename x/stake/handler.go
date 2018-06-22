@@ -7,22 +7,36 @@ import (
 	abci "github.com/tendermint/abci/types"
 )
 
+// Handler struct handles "stake" type messages
+type Handler struct {
+	k Keeper
+}
+
+// NewHandler returns a handler for "stake" type messages
 func NewHandler(k Keeper) sdk.Handler {
-	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
-		// NOTE msg already has validate basic run
-		switch msg := msg.(type) {
-		case MsgCreateValidator:
-			return handleMsgCreateValidator(ctx, msg, k)
-		case MsgEditValidator:
-			return handleMsgEditValidator(ctx, msg, k)
-		case MsgDelegate:
-			return handleMsgDelegate(ctx, msg, k)
-		case MsgUnbond:
-			return handleMsgUnbond(ctx, msg, k)
-		default:
-			return sdk.ErrTxDecode("invalid message parse in staking module").Result()
-		}
+	return Handler{k}
+}
+
+// Implements sdk.Handler
+func (h Handler) Handle(ctx sdk.Context, msg sdk.Msg) sdk.Result {
+	// NOTE msg already has validate basic run
+	switch msg := msg.(type) {
+	case MsgCreateValidator:
+		return handleMsgCreateValidator(ctx, msg, h.k)
+	case MsgEditValidator:
+		return handleMsgEditValidator(ctx, msg, h.k)
+	case MsgDelegate:
+		return handleMsgDelegate(ctx, msg, h.k)
+	case MsgUnbond:
+		return handleMsgUnbond(ctx, msg, h.k)
+	default:
+		return sdk.ErrTxDecode("invalid message parse in staking module").Result()
 	}
+}
+
+// Implmenets sdk.Handler
+func (h Handler) Type() string {
+	return MsgType
 }
 
 // Called every block, process inflation, update validator set

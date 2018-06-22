@@ -37,7 +37,7 @@ func getMockApp(t *testing.T) (*mock.App, Keeper) {
 	keyStake := sdk.NewKVStoreKey("stake")
 	coinKeeper := bank.NewKeeper(mapp.AccountMapper)
 	keeper := NewKeeper(mapp.Cdc, keyStake, coinKeeper, mapp.RegisterCodespace(DefaultCodespace))
-	mapp.Router().AddRoute("stake", NewHandler(keeper))
+	mapp.Router().AddRoute(NewHandler(keeper))
 
 	mapp.SetEndBlocker(getEndBlocker(keeper))
 	mapp.SetInitChainer(getInitChainer(mapp, keeper))

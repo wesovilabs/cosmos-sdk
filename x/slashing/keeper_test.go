@@ -18,7 +18,7 @@ func TestHandleDoubleSign(t *testing.T) {
 	// initial setup
 	ctx, ck, sk, keeper := createTestInput(t)
 	addr, val, amt := addrs[0], pks[0], sdk.NewInt(100)
-	got := stake.NewHandler(sk)(ctx, newTestMsgCreateValidator(addr, val, amt))
+	got := stake.NewHandler(sk).Handle(ctx, newTestMsgCreateValidator(addr, val, amt))
 	require.True(t, got.IsOK())
 	stake.EndBlocker(ctx, sk)
 	require.Equal(t, ck.GetCoins(ctx, addr), sdk.Coins{{sk.GetParams(ctx).BondDenom, initCoins.Sub(amt)}})
@@ -43,7 +43,7 @@ func TestHandleAbsentValidator(t *testing.T) {
 	addr, val, amt := addrs[0], pks[0], sdk.NewInt(100)
 	sh := stake.NewHandler(sk)
 	slh := NewHandler(keeper)
-	got := sh(ctx, newTestMsgCreateValidator(addr, val, amt))
+	got := sh.Handle(ctx, newTestMsgCreateValidator(addr, val, amt))
 	require.True(t, got.IsOK())
 	stake.EndBlocker(ctx, sk)
 	require.Equal(t, ck.GetCoins(ctx, addr), sdk.Coins{{sk.GetParams(ctx).BondDenom, initCoins.Sub(amt)}})
@@ -95,12 +95,12 @@ func TestHandleAbsentValidator(t *testing.T) {
 	require.Equal(t, sdk.Unbonded, validator.GetStatus())
 
 	// unrevocation should fail prior to jail expiration
-	got = slh(ctx, NewMsgUnrevoke(addr))
+	got = slh.Handle(ctx, NewMsgUnrevoke(addr))
 	require.False(t, got.IsOK())
 
 	// unrevocation should succeed after jail expiration
 	ctx = ctx.WithBlockHeader(abci.Header{Time: int64(86400 * 2)})
-	got = slh(ctx, NewMsgUnrevoke(addr))
+	got = slh.Handle(ctx, NewMsgUnrevoke(addr))
 	require.True(t, got.IsOK())
 
 	// validator should be rebonded now
@@ -142,7 +142,7 @@ func TestHandleNewValidator(t *testing.T) {
 	ctx, ck, sk, keeper := createTestInput(t)
 	addr, val, amt := addrs[0], pks[0], int64(100)
 	sh := stake.NewHandler(sk)
-	got := sh(ctx, newTestMsgCreateValidator(addr, val, sdk.NewInt(amt)))
+	got := sh.Handle(ctx, newTestMsgCreateValidator(addr, val, sdk.NewInt(amt)))
 	require.True(t, got.IsOK())
 	stake.EndBlocker(ctx, sk)
 	require.Equal(t, ck.GetCoins(ctx, addr), sdk.Coins{{sk.GetParams(ctx).BondDenom, initCoins.SubRaw(amt)}})

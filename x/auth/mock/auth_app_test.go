@@ -31,7 +31,7 @@ func getMockApp(t *testing.T) *App {
 	mapp := NewApp()
 
 	coinKeeper := bank.NewKeeper(mapp.AccountMapper)
-	mapp.Router().AddRoute("bank", bank.NewHandler(coinKeeper))
+	mapp.Router().AddRoute(bank.NewHandler(coinKeeper))
 
 	require.NoError(t, mapp.CompleteSetup([]*sdk.KVStoreKey{}))
 	return mapp

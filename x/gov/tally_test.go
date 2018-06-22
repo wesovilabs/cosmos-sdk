@@ -20,9 +20,9 @@ func TestTallyNoOneVotes(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 5), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 5), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
@@ -42,10 +42,10 @@ func TestTallyOnlyValidatorsAllYes(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 5), dummyDescription)
-	res := stakeHandler(ctx, val1CreateMsg)
+	res := stakeHandler.Handle(ctx, val1CreateMsg)
 	assert.True(t, res.IsOK())
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 5), dummyDescription)
-	res = stakeHandler(ctx, val2CreateMsg)
+	res = stakeHandler.Handle(ctx, val2CreateMsg)
 	assert.True(t, res.IsOK())
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
@@ -71,9 +71,9 @@ func TestTallyOnlyValidators51No(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 5), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
@@ -98,11 +98,11 @@ func TestTallyOnlyValidators51Yes(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 	val3CreateMsg := stake.NewMsgCreateValidator(addrs[2], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 7), dummyDescription)
-	stakeHandler(ctx, val3CreateMsg)
+	stakeHandler.Handle(ctx, val3CreateMsg)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
@@ -129,11 +129,11 @@ func TestTallyOnlyValidatorsVetoed(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 	val3CreateMsg := stake.NewMsgCreateValidator(addrs[2], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 7), dummyDescription)
-	stakeHandler(ctx, val3CreateMsg)
+	stakeHandler.Handle(ctx, val3CreateMsg)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
@@ -160,11 +160,11 @@ func TestTallyOnlyValidatorsAbstainPasses(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 	val3CreateMsg := stake.NewMsgCreateValidator(addrs[2], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 7), dummyDescription)
-	stakeHandler(ctx, val3CreateMsg)
+	stakeHandler.Handle(ctx, val3CreateMsg)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
@@ -191,11 +191,11 @@ func TestTallyOnlyValidatorsAbstainFails(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 	val3CreateMsg := stake.NewMsgCreateValidator(addrs[2], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 7), dummyDescription)
-	stakeHandler(ctx, val3CreateMsg)
+	stakeHandler.Handle(ctx, val3CreateMsg)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
@@ -222,11 +222,11 @@ func TestTallyOnlyValidatorsNonVoter(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 	val3CreateMsg := stake.NewMsgCreateValidator(addrs[2], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 7), dummyDescription)
-	stakeHandler(ctx, val3CreateMsg)
+	stakeHandler.Handle(ctx, val3CreateMsg)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
@@ -253,14 +253,14 @@ func TestTallyDelgatorOverride(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 5), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 	val3CreateMsg := stake.NewMsgCreateValidator(addrs[2], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 7), dummyDescription)
-	stakeHandler(ctx, val3CreateMsg)
+	stakeHandler.Handle(ctx, val3CreateMsg)
 
 	delegator1Msg := stake.NewMsgDelegate(addrs[3], addrs[2], sdk.NewCoin("steak", 30))
-	stakeHandler(ctx, delegator1Msg)
+	stakeHandler.Handle(ctx, delegator1Msg)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
@@ -289,14 +289,14 @@ func TestTallyDelgatorInherit(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 5), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 	val3CreateMsg := stake.NewMsgCreateValidator(addrs[2], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 7), dummyDescription)
-	stakeHandler(ctx, val3CreateMsg)
+	stakeHandler.Handle(ctx, val3CreateMsg)
 
 	delegator1Msg := stake.NewMsgDelegate(addrs[3], addrs[2], sdk.NewCoin("steak", 30))
-	stakeHandler(ctx, delegator1Msg)
+	stakeHandler.Handle(ctx, delegator1Msg)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
@@ -324,16 +324,16 @@ func TestTallyDelgatorMultipleOverride(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 5), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 	val3CreateMsg := stake.NewMsgCreateValidator(addrs[2], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 7), dummyDescription)
-	stakeHandler(ctx, val3CreateMsg)
+	stakeHandler.Handle(ctx, val3CreateMsg)
 
 	delegator1Msg := stake.NewMsgDelegate(addrs[3], addrs[2], sdk.NewCoin("steak", 10))
-	stakeHandler(ctx, delegator1Msg)
+	stakeHandler.Handle(ctx, delegator1Msg)
 	delegator1Msg2 := stake.NewMsgDelegate(addrs[3], addrs[1], sdk.NewCoin("steak", 10))
-	stakeHandler(ctx, delegator1Msg2)
+	stakeHandler.Handle(ctx, delegator1Msg2)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
@@ -362,16 +362,16 @@ func TestTallyDelgatorMultipleInherit(t *testing.T) {
 
 	dummyDescription := stake.NewDescription("T", "E", "S", "T")
 	val1CreateMsg := stake.NewMsgCreateValidator(addrs[0], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 25), dummyDescription)
-	stakeHandler(ctx, val1CreateMsg)
+	stakeHandler.Handle(ctx, val1CreateMsg)
 	val2CreateMsg := stake.NewMsgCreateValidator(addrs[1], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 6), dummyDescription)
-	stakeHandler(ctx, val2CreateMsg)
+	stakeHandler.Handle(ctx, val2CreateMsg)
 	val3CreateMsg := stake.NewMsgCreateValidator(addrs[2], crypto.GenPrivKeyEd25519().PubKey(), sdk.NewCoin("steak", 7), dummyDescription)
-	stakeHandler(ctx, val3CreateMsg)
+	stakeHandler.Handle(ctx, val3CreateMsg)
 
 	delegator1Msg := stake.NewMsgDelegate(addrs[3], addrs[2], sdk.NewCoin("steak", 10))
-	stakeHandler(ctx, delegator1Msg)
+	stakeHandler.Handle(ctx, delegator1Msg)
 	delegator1Msg2 := stake.NewMsgDelegate(addrs[3], addrs[1], sdk.NewCoin("steak", 10))
-	stakeHandler(ctx, delegator1Msg2)
+	stakeHandler.Handle(ctx, delegator1Msg2)
 
 	proposal := keeper.NewTextProposal(ctx, "Test", "description", ProposalTypeText)
 	proposalID := proposal.GetProposalID()
