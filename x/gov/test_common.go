@@ -57,9 +57,11 @@ func getEndBlocker(keeper Keeper) sdk.EndBlocker {
 func getInitChainer(mapp *mock.App, keeper Keeper, stakeKeeper stake.Keeper) sdk.InitChainer {
 	return func(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 		mapp.InitChainer(ctx, req)
-		stake.InitGenesis(ctx, stakeKeeper, stake.DefaultGenesisState())
+		validators := stake.InitGenesis(ctx, stakeKeeper, stake.DefaultGenesisState())
 		InitGenesis(ctx, keeper, DefaultGenesisState())
-		return abci.ResponseInitChain{}
+		return abci.ResponseInitChain{
+			Validators: validators,
+		}
 	}
 }
 

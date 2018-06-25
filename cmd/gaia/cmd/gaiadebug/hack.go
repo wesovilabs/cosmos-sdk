@@ -237,7 +237,9 @@ func (app *GaiaApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 	}
 
 	// load the initial stake information
-	stake.InitGenesis(ctx, app.stakeKeeper, genesisState.StakeData)
-	return abci.ResponseInitChain{}
+	validators := stake.InitGenesis(ctx, app.stakeKeeper, genesisState.StakeData)
+	return abci.ResponseInitChain{
+		Validators: validators,
+	}
 
 }

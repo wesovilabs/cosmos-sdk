@@ -1,6 +1,7 @@
 package stake
 
 import (
+	abci "github.com/tendermint/abci/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -32,7 +33,7 @@ func DefaultGenesisState() GenesisState {
 }
 
 // InitGenesis - store genesis parameters
-func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) {
+func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) (vals []abci.Validator) {
 	store := ctx.KVStore(k.storeKey)
 	k.setPool(ctx, data.Pool)
 	k.setNewParams(ctx, data.Params)
@@ -52,6 +53,8 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) {
 		k.setDelegation(ctx, bond)
 	}
 	k.updateBondedValidatorsFull(ctx, store)
+
+	return k.getTendermintUpdates(ctx)
 }
 
 // WriteGenesis - output genesis parameters

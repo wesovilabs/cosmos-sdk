@@ -293,7 +293,7 @@ func (app *BaseApp) InitChain(req abci.RequestInitChain) (res abci.ResponseInitC
 
 	// Initialize the deliver state and run initChain
 	app.setDeliverState(abci.Header{})
-	app.initChainer(app.deliverState.ctx, req) // no error
+	res = app.initChainer(app.deliverState.ctx, req) // no error
 
 	// NOTE: we don't commit, but BeginBlock for block 1
 	// starts from this deliverState
