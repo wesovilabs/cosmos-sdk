@@ -50,8 +50,8 @@ func NewApp() *App {
 	// define the accountMapper
 	app.AccountMapper = auth.NewAccountMapper(
 		app.Cdc,
-		app.KeyAccount,      // target store
-		&auth.BaseAccount{}, // prototype
+		app.KeyAccount,        // target store
+		auth.ProtoBaseAccount, // prototype
 	)
 
 	// initialize the app, the chainers and blockers can be overwritten before calling complete setup

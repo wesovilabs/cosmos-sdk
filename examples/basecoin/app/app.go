@@ -65,8 +65,8 @@ func NewBasecoinApp(logger log.Logger, db dbm.DB) *BasecoinApp {
 	// Define the accountMapper.
 	app.accountMapper = auth.NewAccountMapper(
 		cdc,
-		app.keyAccount,      // target store
-		&types.AppAccount{}, // prototype
+		app.keyAccount,        // target store
+		auth.ProtoBaseAccount, // prototype
 	)
 
 	// add accountMapper/handlers

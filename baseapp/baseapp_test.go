@@ -753,7 +753,7 @@ func MakeCodec() *wire.Codec {
 	cdc.RegisterInterface((*sdk.Msg)(nil), nil)
 	crypto.RegisterAmino(cdc)
 	cdc.RegisterInterface((*auth.Account)(nil), nil)
-	cdc.RegisterConcrete(&auth.BaseAccount{}, "cosmos-sdk/BaseAccount", nil)
+	cdc.RegisterConcrete(auth.ProtoBaseAccount, "cosmos-sdk/BaseAccount", nil)
 	return cdc
 }
 
@@ -774,7 +774,7 @@ func TestMultipleBurn(t *testing.T) {
 		panic(err)
 	}
 
-	app.accountMapper = auth.NewAccountMapper(app.cdc, capKey, &auth.BaseAccount{})
+	app.accountMapper = auth.NewAccountMapper(app.cdc, capKey, auth.ProtoBaseAccount)
 	app.accountKeeper = bank.NewKeeper(app.accountMapper)
 
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountMapper, auth.FeeCollectionKeeper{}))
@@ -821,7 +821,7 @@ func TestBurnMultipleOwners(t *testing.T) {
 		panic(err)
 	}
 
-	app.accountMapper = auth.NewAccountMapper(app.cdc, capKey, &auth.BaseAccount{})
+	app.accountMapper = auth.NewAccountMapper(app.cdc, capKey, auth.ProtoBaseAccount)
 	app.accountKeeper = bank.NewKeeper(app.accountMapper)
 
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountMapper, auth.FeeCollectionKeeper{}))
@@ -888,7 +888,7 @@ func TestSendBurn(t *testing.T) {
 		panic(err)
 	}
 
-	app.accountMapper = auth.NewAccountMapper(app.cdc, capKey, &auth.BaseAccount{})
+	app.accountMapper = auth.NewAccountMapper(app.cdc, capKey, auth.ProtoBaseAccount)
 	app.accountKeeper = bank.NewKeeper(app.accountMapper)
 
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountMapper, auth.FeeCollectionKeeper{}))
